@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require('express');
 const morgan = require('morgan');
 const playstore = require('./playstore.js');
@@ -14,48 +16,41 @@ app.get('/apps', (req, res) => {
     let results = playstore;
 
     if (genres) {
-        if( genres === 'Action' ||
-            genres === 'Puzzle' || 
-            genres === 'Strategy' ||
-            genres === 'Casual' ||
-            genres === 'Arcade' ||
-            genres === 'Card'
-            ) { 
+        const validGenres = ['action', 'puzzle', 'strategy', 'casual', 'arcade', 'card'];
+        if( validGenres.includes(genres)) { 
             results = results.filter(app => app.Genres.toLowerCase() === genres.toLowerCase());
         }
         else {
             return res
                     .status(400)
-                    .send({error: 'Genre must be one of "Action", "Puzzle", "Strategy", "Casual", "Arcade", or "Card".'})
+                    .send({error: 'Genre must be one of "Action", "Puzzle", "Strategy", "Casual", "Arcade", or "Card".'});
         }
     }
 
     if (sort) {
-        if (sort === 'app') {
+        if (sort.toLowerCase() === 'app') {
             results = results
                         .sort((a, b) => a.App.localeCompare(b.App));
             return res
-                    .json(results)
+                    .json(results);
         }
-        else if (sort === 'rating') {
+        else if (sort.toLowerCase() === 'rating') {
             results = results
-                        .sort((a, b) => b.Rating - a.Rating)
+                        .sort((a, b) => b.Rating - a.Rating);
             return res
-                    .json(results)
+                    .json(results);
         }
         else {
             return res
                     .status(400)
-                    .send({error: 'Please sort by either "rating" or "app".'})
+                    .send({error: 'Please sort by either "rating" or "app".'});
         }
 
     }
 
     return res
-            .json(results)
+            .json(results);
 });
 
 
-app.listen(8000, () => {
-    console.log("Express server is listening on port 8000");
-});
+module.exports = app;
